@@ -1,0 +1,3 @@
+method,grid_hull_rmse_synthetic_ug_m3,grid_extrapolation_rmse_synthetic_ug_m3,loo_station_rmse_synthetic_ug_m3
+IDW,3.1037578362465474,2.3460958121130346,2.7885901514372056
+RBF_Tikhonov,2.5576049528333673,2.551515548733076,2.532853037546479

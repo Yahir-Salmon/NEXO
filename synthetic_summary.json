@@ -1,0 +1,110 @@
+{
+  "all_results_are": "SYNTHETIC_NUMERICAL_EXPERIMENTS_NOT_REAL_MONTERREY_OBSERVATIONS",
+  "seed": 20261018,
+  "stations_synthetic": 24,
+  "measurement_noise_sd_ug_m3": 1,
+  "reconstruction": {
+    "IDW": {
+      "grid_hull_rmse_synthetic": 3.1037578362465474,
+      "grid_extrapolation_rmse_synthetic": 2.3460958121130346,
+      "loo_station_rmse_synthetic": 2.7885901514372056
+    },
+    "RBF_Tikhonov": {
+      "grid_hull_rmse_synthetic": 2.5576049528333673,
+      "grid_extrapolation_rmse_synthetic": 2.551515548733076,
+      "loo_station_rmse_synthetic": 2.532853037546479
+    }
+  },
+  "rbf_matrix_rank_tol": 24,
+  "rbf_condition_number": 39435.026462904825,
+  "singular_values": [
+    7.005359105266623,
+    4.70041705126304,
+    4.413093276034419,
+    3.1928802607533386,
+    1.99713529342358,
+    0.9438044218750975,
+    0.5767845776113384,
+    0.40331748573509624,
+    0.2719822903568138,
+    0.18589913669748703,
+    0.12561582887513292,
+    0.06296904469742516,
+    0.03745848446141716,
+    0.032395623210266906,
+    0.02234604685523813,
+    0.011008763817713684,
+    0.006754077541197292,
+    0.003818434107168683,
+    0.0028774235323265037,
+    0.0017431952678734,
+    0.0014113499146530643,
+    0.0004498762927285931,
+    0.0003013093415761365,
+    0.00017764306844972772
+  ],
+  "lambda_LOOCV": [
+    {
+      "lambda": 0.0001,
+      "rmse": 1.7894154361313255
+    },
+    {
+      "lambda": 0.001,
+      "rmse": 2.0456553548753034
+    },
+    {
+      "lambda": 0.01,
+      "rmse": 2.297305807418799
+    },
+    {
+      "lambda": 0.05,
+      "rmse": 2.532853037546479
+    },
+    {
+      "lambda": 0.1,
+      "rmse": 2.6445327444820648
+    },
+    {
+      "lambda": 0.3,
+      "rmse": 2.7976102714824185
+    },
+    {
+      "lambda": 1,
+      "rmse": 3.1071278489274214
+    },
+    {
+      "lambda": 3,
+      "rmse": 4.01277075310272
+    },
+    {
+      "lambda": 10,
+      "rmse": 6.6848510031859645
+    }
+  ],
+  "mass_relative_error_single_periodic_step": 0.0,
+  "mesh_convergence": [
+    {
+      "n": 24,
+      "rms": 0.08325907220096733
+    },
+    {
+      "n": 48,
+      "rms": 0.037046584581910486
+    },
+    {
+      "n": 96,
+      "rms": 0.021035051588893867
+    }
+  ],
+  "executed_with": {
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "matplotlib": "3.10.8"
+  },
+  "notes": [
+    "Known smooth synthetic concentration; all x and y are local km, NOT georeferenced station positions.",
+    "Convex hull used to mask interpolation maps; grid outside hull reports extrapolation error separately.",
+    "LOOCV uses stationary synthetic sensor coordinates only, distinct from independent grid truth.",
+    "Periodic PDE solver represents a laboratory benchmark, not calibrated real dispersion."
+  ]
+}

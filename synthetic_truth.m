@@ -1,0 +1,6 @@
+function z=synthetic_truth(x,y)
+% Known synthetic function in ug/m3; x,y in local km.
+z=18 +20*exp(-((x-22).^2/(2*9^2)+(y-28).^2/(2*11^2))) + ...
+    8*exp(-((x-49).^2/(2*6^2)+(y-13).^2/(2*8^2)))+ ...
+    3*sin(x/12).*cos(y/10);
+end

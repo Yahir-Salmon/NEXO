@@ -1,0 +1,36 @@
+\section{Introducción y motivación}\label{sec:intro}
+La contaminación atmosférica constituye un proceso espacial y temporal parcialmente observado. Incluso cuando una red dispone de una variedad de sensores, el campo de concentración entre estaciones no se mide directamente. Para utilizar estimaciones intermedias se necesita distinguir la reconstrucción matemática, la inferencia estadística y la explicación física. NEXO aborda este problema desde álgebra lineal numérica, aproximación de campos y ecuaciones diferenciales. Como advierten la teoría de problemas inversos y los tratamientos de estadística espacial, la existencia de una solución interpolante no garantiza identificabilidad, estabilidad ni capacidad de predicción \cite{golub2013,cressie1993}.
+
+\section{Planteamiento y preguntas de investigación}
+Sean $s_i=(x_i,y_i)\in\Omega\subset\real^2$ las posiciones métricas de $n$ sensores y $t_j$ sus instantes. El objetivo observacional es reconstruir $C(s,t)$ a partir de medidas $z_i(t)$ sujetas a ruido, controles de calidad y cobertura incompleta. La perspectiva dinámica añade un campo de velocidades $\boldsymbol v(s,t)$ y fuentes o sumideros de concentración. En la primera versión, se investiga: (i) estabilidad de dos aproximaciones espaciales; (ii) respuesta de sus gradientes al ruido; (iii) conservación de una cantidad integrada en una EDP simplificada; y (iv) error fuera del conjunto de estaciones de ajuste. La pregunta causal sobre emisiones permanece fuera de alcance.
+
+\section{Objetivos verificables}
+\begin{enumerate}
+\item Implementar métodos de reconstrucción e informar $\RRMSE$, MAE y sensibilidad al parámetro de regularización.
+\item Examinar rango, espectro singular y condicionamiento de una matriz RBF.
+\item Calcular gradientes respecto a coordenadas métricas y explicitar las consecuencias de derivar estimaciones.
+\item Implementar un transporte--difusión conservativo en un problema periódico con solución analítica y verificar refinamiento de malla.
+\item Diseñar la adquisición de datos reales con trazabilidad, sin sustituir silenciosamente descargas fallidas por simulaciones.
+\item Entregar aplicaciones MATLAB y navegador, análisis R, fuentes reproducibles y un documento científico compilable.
+\end{enumerate}
+
+\section{Datos reales: fuentes, procedencia y límites}\label{sec:datos}
+El inventario proviene de consulta a portales institucionales el 18 de octubre de 2026. La tabla \ref{tab:fuentes} registra lo verificado documentalmente; \emph{no equivale a una auditoría de registros descargados}. Se evitó inventar porcentaje de faltantes, estaciones o cobertura efectiva. El archivo editable \texttt{data/metadata/sources.json} amplía URLs, formato y condiciones.
+
+\begin{table}[H]\centering\small\caption{Fuentes documentadas. La columna de disponibilidad describe el estado del proyecto, no el estado operativo permanente del proveedor.}\label{tab:fuentes}
+\begin{tabular}{p{.23\linewidth}p{.38\linewidth}p{.28\linewidth}}\toprule
+Fuente & Variables y tiempo descritos & Situación de adquisición\\\midrule
+INECC / datos.gob.mx & Contaminantes validados por hora, Nuevo León, recurso 2022; licencia indicada CC BY 4.0 & Página oficial localizada; CSV no adquirido \\
+Observatorio del Aire / datos SIMA & PM$_{2.5}$ y PM$_{10}$, 15 estaciones, 2025--septiembre 2026, frecuencia horaria & URL CSV directa localizada; descarga fallida por restricciones de red \\
+NASA POWER & Temperatura, humedad, viento y precipitación, según parámetros disponibles; productos derivados de modelos/asimilación & API documentada; no se obtuvo respuesta de datos \\
+OpenAQ v3 & Mediciones reportadas por estación y sensor, frecuencia según fuente & API documentada, con clave de acceso requerida \\
+\bottomrule\end{tabular}
+\end{table}
+
+\paragraph{Calidad y uso.} Los datos de estaciones y los productos meteorológicos no comparten necesariamente soporte espacial, escala temporal ni unidades. Antes de fusionarlos deben comprobarse coordenadas, horarios de observación, zonas horarias, coberturas, unidades por variable, códigos de valores faltantes, trazabilidad de sensores, licencias y discontinuidades. El pipeline conserva una copia inmutable y un registro criptográfico SHA-256 \emph{cuando se descarga realmente un archivo}. Una fuente remota sin respuesta o un esquema inesperado ocasiona un error explícito y no la creación de observaciones artificiales.
+
+\section{Notación y unidades}\label{sec:notacion}
+$C$ denota concentración ($\um$ en nuestros experimentos), $s=(x,y)$ una ubicación, $\boldsymbol v=(u,v)$ el campo de viento (m/s), $D$ difusión efectiva (m$^2$/s), $S$ fuente de concentración (\,$\mu$g\,m$^{-3}$s$^{-1}$), $k$ tasa de eliminación (s$^{-1}$) y $t$ tiempo (s). Para el primer ensayo de reconstrucción $x,y$ están expresados en \emph{kilómetros de un dominio local abstracto sin georreferenciación}; para el ensayo de transporte se emplean metros. No se realizan derivadas en grados geográficos.
+
+\section{Revisión bibliográfica dirigida}
+La solución estable de sistemas lineales requiere factorizaciones y análisis singular en lugar de inversión indiscriminada \cite{golub2013}. El método de Tikhonov amortigua direcciones mal identificadas a costa de sesgo. La estadística espacial permite modelar dependencia y evaluar predicciones evitando suponer independencia entre vecinos \cite{cressie1993}. Los esquemas de volumen finito representan balances conservativos de flujos y permiten examinar oscilaciones, estabilidad y efectos de frontera \cite{leveque2002}. Estos fundamentos motivan las implementaciones efectivas de las secciones siguientes.

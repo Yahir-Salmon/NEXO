@@ -1,0 +1,13 @@
+{
+  "experiment_id": "SYNTH-2026-10-18-A",
+  "kind": "SYNTHETIC",
+  "spatial_domain": "[1,59] x [1,49] km, local non-georeferenced axes",
+  "station_count": 24,
+  "seed": 20261018,
+  "noise_std_ug_m3": 1.0,
+  "methods": ["IDW_p2", "Gaussian_RBF_Tikhonov_SVD"],
+  "rbf_width_km": 15,
+  "regularization_lambda": 0.05,
+  "validation": "leave-one-station-out + known synthetic grid truth; convex hull",
+  "pde": {"boundary":"periodic", "scheme":"conservative upwind + centered diffusion + forward Euler", "D_m2_s":10, "wind_u_m_s":1.5, "domain_L_m":10000}
+}

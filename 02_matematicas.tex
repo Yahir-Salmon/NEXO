@@ -1,0 +1,56 @@
+\section{Modelo inverso y álgebra lineal}\label{sec:inverso}
+La primera representación supone $C(s)\approx \sum_{j=1}^p\beta_j\phi_j(s)$, por lo que, al observar $n$ estaciones,
+\begin{equation}\boldsymbol y=A\boldsymbol\beta+\boldsymbol\varepsilon,\qquad A_{ij}=\phi_j(s_i),\quad i=1,\dots,n.\label{eq:observacion}\end{equation}
+Si $p$ se aproxima a $n$, puede lograrse error de ajuste reducido aunque las perturbaciones crezcan en las componentes asociadas a valores singulares pequeños. El dato observado es $\boldsymbol y$, la matriz $A$ contiene evaluaciones de funciones de base y $\boldsymbol\beta$ es un conjunto de parámetros no necesariamente identificables.
+
+\subsection{Dos métodos de reconstrucción}
+Para distancia inversa con potencia $p=2$, la predicción se define por
+\begin{equation}\widehat C(s)=\frac{\sum_i \|s-s_i\|^{-p}y_i}{\sum_i\|s-s_i\|^{-p}},\label{eq:idw}\end{equation}
+con una rama exacta $\widehat C(s_i)=y_i$ cuando la consulta coincide con un sensor. IDW tiene un comportamiento local interpretable, pero no es una solución de una EDP ni incorpora por sí mismo una varianza predictiva.
+
+Para bases radiales gaussianas de ancho $\ell>0$,
+\begin{equation}\phi_j(s)=\exp\!\left(-\frac{\|s-s_j\|_2^2}{2\ell^2}\right),\qquad A_{ij}=\phi_j(s_i),\label{eq:rbf}\end{equation}
+se resuelve un problema potencialmente mal condicionado. La versión MATLAB y la validación Python utilizan $\ell=15$ km y penalización sobre coeficientes; la demostración independiente en navegador utiliza \emph{kernel ridge} $(K+\lambda I)\alpha=y$ y por tanto no es algebraicamente idéntica a la solución MATLAB. Esta distinción se conserva expresamente para no atribuir equivalencia a algoritmos distintos.
+
+\subsection{Mínimos cuadrados y Tikhonov}
+Minimizar $\|A\beta-y\|_2^2$ produce formalmente las ecuaciones normales $A^TA\beta=A^Ty$. Si $A$ tiene rango suficiente, la solución también puede calcularse mediante QR o SVD; formar $A^TA$ eleva al cuadrado el número de condición y resulta desaconsejable para matrices problemáticas. Con $L$ como operador de penalización y $\lambda\geq0$, se define
+\begin{equation}\widehat\beta_\lambda=\arg\min_\beta\left(\|A\beta-y\|_2^2+\lambda\|L\beta\|_2^2\right).\label{eq:tikh}\end{equation}
+La derivada de la función objetivo es $2A^T(A\beta-y)+2\lambda L^TL\beta$, de donde se obtiene
+\begin{equation}(A^TA+\lambda L^TL)\widehat\beta_\lambda=A^Ty.\label{eq:normales}\end{equation}
+No se resuelve \eqref{eq:normales} mediante inversión explícita: el código MATLAB forma el sistema rectangular aumentado
+\begin{equation}\left[\begin{array}{c}A\\\sqrt\lambda L\end{array}\right]\beta\simeq\left[\begin{array}{c}y\\0\end{array}\right]\label{eq:aumentado}\end{equation}
+y aplica SVD reducida. Para $L=I$, si $A=U\Sigma V^T$,
+\begin{equation}\widehat\beta_\lambda=\sum_{i}\frac{\sigma_i}{\sigma_i^2+\lambda}(u_i^Ty)v_i.\label{eq:filtros}\end{equation}
+El filtro reduce la contribución de direcciones $\sigma_i^2\ll\lambda$, pero introduce sesgo. Una $L$ de diferencias finitas penalizaría rugosidad entre parámetros espacialmente conectados, opción no implementada en la primera versión. La elección exploratoria de $\lambda$ se estudia por error dejando estaciones fuera; para obtener una estimación insesgada del error de un hiperparámetro \emph{elegido} por validación haría falta validación anidada.
+
+\subsection{Rango, estabilidad y sensibilidad}
+Si una perturbación $\delta y$ se alinea con una dirección singular izquierda asociada a $\sigma_i$ pequeño, los coeficientes sin regularización pueden amplificarse como $\sigma_i^{-1}\delta y$. Una red de estaciones agrupada puede producir columnas RBF casi linealmente dependientes, aumentar $\kappa_2(A)$ y dificultar la identificación. El número de estaciones no debe confundirse con la calidad de su distribución. Para puntos irregulares de contaminación, una malla bilineal no está determinada sin un preprocesamiento geométrico; por ello no se incluye entre los métodos ejecutados.
+
+\section{Cálculo vectorial de campos reconstruidos}\label{sec:vector}
+Con $C=C(x,y,t)$ diferenciable, el gradiente es
+\begin{equation}\nabla C=(\partial_x C,\partial_y C),\qquad \|\nabla C\|_2=\sqrt{(\partial_xC)^2+(\partial_yC)^2}.\label{eq:grad}\end{equation}
+La interpretación geométrica de $\nabla C$ es la dirección de máximo incremento local del \emph{campo estimado}, no la dirección causal hacia una fuente. Para un modelo RBF con centros $s_j$,
+\begin{equation}\nabla\widehat C(s)=-\sum_j\beta_j\phi_j(s)\frac{s-s_j}{\ell^2}.\label{eq:gradRBF}\end{equation}
+Esta expresión se deduce de la regla de la cadena aplicada a \eqref{eq:rbf}. En la interfaz se utiliza el gradiente por diferencias de segundo orden en el interior: $D_xC_{i,j}\approx(C_{i,j+1}-C_{i,j-1})/(2\Delta x)$, y análogamente en $y$. La precisión formal $O(\Delta x^2)$ para campos suaves no garantiza precisión respecto al campo ambiental verdadero: diferenciación y errores de reconstrucción interactúan. Para viento vectorial $\boldsymbol v=(u,v)$, $\nabla\cdot\boldsymbol v=\partial_xu+\partial_yv$ y $(\nabla\times\boldsymbol v)_z=\partial_xv-\partial_yu$. Estos operadores se implementan, pero no se calculan a partir de viento medido en esta entrega.
+
+\section{Transporte--difusión y balance conservativo}\label{sec:pde}
+El modelo general estudiado es
+\begin{equation}\frac{\partial C}{\partial t}+\nabla\cdot(\boldsymbol v C)=\nabla\cdot(D\nabla C)+S-kC.\label{eq:edp}\end{equation}
+Se parte del caso restringido $\boldsymbol v=(u,0)$ constante, $D\geq0$ escalar constante, $S=k=0$, dominio cuadrado periódico y dato inicial suave conocido. En esta configuración no se pretende reproducir mezclas verticales, terreno montañoso, campos meteorológicos reales ni emisiones urbanas. La discretización se basa en flujos de volumen finito, con flujo convectivo upwind y flujo difusivo centrado. La actualización para celda $(i,j)$ es
+\begin{equation}C_{i,j}^{n+1}=C_{i,j}^n-\frac{\Delta t}{\Delta x}(F^x_{i+1/2,j}-F^x_{i-1/2,j})-\frac{\Delta t}{\Delta y}(F^y_{i,j+1/2}-F^y_{i,j-1/2}),\label{eq:fv}\end{equation}
+con $F^x_{i+1/2,j}=u^+ C_{i,j}+u^- C_{i+1,j}-D(C_{i+1,j}-C_{i,j})/\Delta x$, $u^+=\max(u,0)$ y $u^-=\min(u,0)$; se define análogamente el flujo vertical.
+
+\begin{proposicion}\label{prop:masa}
+Para el esquema \eqref{eq:fv}, con condiciones periódicas, malla uniforme, $S=k=0$ y aritmética exacta, la masa discreta $M^n=\Delta x\Delta y\sum_{i,j} C_{i,j}^n$ se conserva.
+\end{proposicion}
+\begin{proof}Sumar \eqref{eq:fv} sobre todas las celdas hace que cada flujo de interfaz figure exactamente una vez con signo positivo y otra con signo negativo. Las parejas de la frontera se cancelan debido a la periodicidad. Por tanto $M^{n+1}-M^n=0$.\end{proof}
+
+\subsection{Estabilidad temporal y número de Péclet}
+Un criterio suficiente para positividad en el caso de coeficientes constantes y actualización explícita es
+\begin{equation}\Delta t\left(\frac{|u|}{\Delta x}+\frac{|v|}{\Delta y}+2D\left(\frac1{\Delta x^2}+\frac1{\Delta y^2}\right)+k\right)\leq1.\label{eq:cfl}\end{equation}
+El código rechaza parámetros que violan el límite, en lugar de continuar con un paso inestable. El número de Péclet de celda $\mathrm{Pe}=|u|\Delta x/D$ (si $D>0$) compara advección y difusión. Para $\mathrm{Pe}$ elevado, upwind agrega difusión numérica apreciable; la convergencia puede ser de primer orden con refinamiento espacial.
+
+\subsection{Referencia analítica}
+Para $\Omega=[0,L)^2$, $v=0$, $S=k=0$ y una sola componente de Fourier, la solución
+\begin{equation}C(x,y,t)=20+5e^{-8\pi^2Dt/L^2}\sin\left(\frac{2\pi(x-ut)}L\right)\sin\left(\frac{2\pi y}L\right)\label{eq:solucion}\end{equation}
+satisface la ecuación \eqref{eq:edp} con las hipótesis del ensayo. Derivando respecto al tiempo aparece el término de transporte $u\partial_xC$ y la suma de dos derivadas segundas produce $-8\pi^2 C_{\mathrm{osc}}/L^2$. Se usa \eqref{eq:solucion} como referencia externa a la discretización para evitar que la mera conservación de masa se confunda con convergencia al campo correcto.

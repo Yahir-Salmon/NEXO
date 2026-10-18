@@ -1,0 +1,39 @@
+\section{Integración de software y reproducibilidad}\label{sec:software}
+El repositorio utiliza carpetas \texttt{matlab/}, \texttt{R/}, \texttt{src/}, \texttt{tests/}, \texttt{web/}, \texttt{data/}, \texttt{results/} y \texttt{paper/}. MATLAB implementa reconstrucción, SVD, derivación y EDP; R contiene un pipeline estadístico con separación de estaciones y PCA condicionada a datos reales; Python gestiona ingesta y ejecuta pruebas independientes. El esquema canónico de intercambio es CSV con \texttt{station\_id}, \texttt{timestamp\_source}, \texttt{variable}, \texttt{value}, \texttt{unit}, \texttt{latitude}, \texttt{longitude}. Hasta verificar la convención horaria original, \texttt{timestamp\_source} se considera un tiempo con zona de origen pendiente; la variable nunca se etiqueta falsamente como UTC. Para análisis espacial real debe agregarse una proyección UTM apropiada con registro explícito del EPSG utilizado.
+
+\subsection{Procedimiento de ejecución del experimento sintético}
+\begin{verbatim}
+python -m pip install -r requirements.txt
+python -m pytest -q tests
+python src/validation/run_synthetic_experiments.py
+cd paper
+pdflatex main.tex
+bibtex8 main
+pdflatex main.tex
+pdflatex main.tex
+\end{verbatim}
+La semilla de Python y MATLAB es el entero 20261018, pero sus generadores no tienen por qué producir la misma secuencia: se exige reproducibilidad dentro de cada implementación, no igualdad de observaciones generadas entre lenguajes. El archivo de métricas \texttt{results/metrics/}\\\texttt{synthetic\_summary.json} conserva cifras completas y configuración.
+
+\subsection{Adquisición autenticable y separación de fuentes}
+\begin{verbatim}
+python src/acquisition/fetch_sources.py sima
+python src/acquisition/fetch_sources.py nasa
+python src/preprocessing/normalize_sima.py \
+ data/raw/observatorio_sima_horario.csv data/processed/sima_normalized.csv
+Rscript R/scripts/analysis.R data/processed/sima_normalized.csv results
+\end{verbatim}
+Estas órdenes de adquisición solo funcionarán con Internet y bajo las condiciones de acceso que establezca cada proveedor. La normalización falla deliberadamente si falta un campo requerido; la fase de integración temporal se aplaza hasta documentar la zona horaria de cada fuente. Para MATLAB se usa \texttt{addpath(genpath('matlab')); NEXOApp} o \texttt{run('matlab/run\_demo.m')}; la aplicación interactiva complementaria es \texttt{web/index.html}, accesible sin servidor ni datos remotos.
+
+\section{Estado de cumplimiento}\label{sec:estado}
+\begin{table}[H]\centering\small\caption{Auditoría de desarrollo al 18/10/2026. \emph{Probado} indica únicamente ensayos ejecutados en esta sesión.}\label{tab:estado}
+\begin{tabular}{p{.50\linewidth}p{.35\linewidth}}\toprule Componente & Estado \\\midrule
+Inventario de fuentes y URLs exactas & Identificado/documentado, sin datos descargados \\
+Datos crudos reales e informe de faltantes & Pendiente \\
+IDW, RBF, Tikhonov SVD en MATLAB & Implementado en fuente; ejecución MATLAB pendiente \\
+Banco de referencia Python y figuras & Implementado y 12 pruebas superadas \\
+EDP conservativa y verificación Python & Implementado, probado en banco periódico \\
+Análisis estadístico R sobre datos reales & Script escrito, bloqueado sin datos / R \\
+Aplicación MATLAB programática & Fuente implementada, ejecución MATLAB pendiente \\
+Aplicación de navegador sintética & HTML/JS autónomo; validación de navegador real pendiente; cálculo JS probado en DOM simulado \\
+Informe LaTeX + bibliografía & Compilación verificable desde el proyecto \\
+Concentración y predicción ambiental real & No ejecutadas; sin conclusiones \\\bottomrule\end{tabular}\end{table}

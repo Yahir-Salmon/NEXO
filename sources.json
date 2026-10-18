@@ -1,0 +1,68 @@
+{
+  "consultation_date_utc": "2026-10-18",
+  "status": "RESEARCH SOURCES VERIFIED BY PUBLIC DOCUMENTATION, NO REAL MEASUREMENT BYTES ACQUIRED IN CURRENT ENVIRONMENT",
+  "sources": [
+    {
+      "provider": "Instituto Nacional de Ecología y Cambio Climático (INECC), datos.gob.mx",
+      "dataset": "Concentraciones validadas de calidad del aire de Nuevo León (2022)",
+      "url": "https://www.datos.gob.mx/dataset/concentraciones_validadas_calidad_aire_entidad_federativa/resource/8d674b36-46f4-4d38-a91c-6413c8b2e674",
+      "period": "2022 per catalog resource title",
+      "geography": "Nuevo León - station measurements",
+      "variables": ["PM2.5","PM10","CO","NO2","SO2","O3"],
+      "units": "Per record column 'unidades'; not yet inspected",
+      "spatial_resolution": "Irregular monitoring stations - number and locations not retrieved",
+      "temporal_resolution": "Hourly per description",
+      "missing_pct": null,
+      "license": "CC BY 4.0 per catalog metadata (attribution required)",
+      "method": "Manual official CSV download and normalization script, pending",
+      "known_limits": "Metadata viewed; direct response 403 in web; no raw file obtained. Do not report coverage or quality without inspecting file."
+    },
+    {
+      "provider": "Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey / SIMA data",
+      "dataset": "SIMA hourly particulate observations",
+      "url": "https://www.observatoriodelaire.com/datos",
+      "csv_url": "https://www.observatoriodelaire.com/api/datos/sima-horario?anio=todos&estacion=todas&parametro=todos&v=2026-09",
+      "period": "2025-01 to 2026-09 per portal",
+      "geography": "Metropolitan Monterrey, 15 SIMA stations per portal",
+      "variables": ["PM2.5","PM10"],
+      "units": "µg/m³ on portal; exact file units not confirmed",
+      "spatial_resolution": "15 stations, coordinates not inspected",
+      "temporal_resolution": "Hourly",
+      "missing_pct": null,
+      "license": "Not established for underlying CSV; review portal's terms before redistribution",
+      "method": "HTTP GET of exact link from portal; download to immutable data/raw with SHA256 in fetch_sources.py",
+      "known_limits": "Web tool reports unsupported text/csv, container runtime has DNS network restrictions; no downloaded measurement rows."
+    },
+    {
+      "provider": "NASA Langley Research Center POWER",
+      "dataset": "Hourly modeled meteorology / assimilation and satellite-derived estimates",
+      "url": "https://power.larc.nasa.gov/docs/services/api/temporal/hourly/",
+      "api_base": "https://power.larc.nasa.gov/api/temporal/hourly/point",
+      "period": "2001 to near real time (provider documentation); example download 2026-01",
+      "geography": "Single coarse-resolution meteorological pixel near approximate Monterrey city center, -100.316,25.6866; NOT station measurements",
+      "variables": ["T2M", "RH2M", "WS10M", "WD10M", "PRECTOTCORR"],
+      "units": "Read returned parameter metadata, not hardcoded",
+      "spatial_resolution": "Original product grid, not municipal/local air station scale",
+      "temporal_resolution": "Hourly; request UTC explicit",
+      "missing_pct": null,
+      "license": "Check NASA POWER service citation and usage terms on acquisition",
+      "method": "GET JSON using fetch_sources.py nasa; preserve raw payload and SHA256",
+      "known_limits": "Atmospheric reanalysis/product estimates; cannot support street-level causal inference"
+    },
+    {
+      "provider": "OpenAQ",
+      "dataset": "OpenAQ API v3 station and sensor observations",
+      "url": "https://docs.openaq.org/api",
+      "period": "Varies by station and sensor",
+      "geography": "Mexico; spatial bounds query required",
+      "variables": ["PM2.5", "PM10", "other supported pollutants"],
+      "units": "Per API sensor metadata",
+      "spatial_resolution": "Irregular georeferenced sensor locations",
+      "temporal_resolution": "Sensor-specific; hourly endpoint available",
+      "missing_pct": null,
+      "license": "Per station/attribution/terms; not all records necessarily OpenAQ-owned",
+      "method": "v3 endpoints with X-API-Key from user-controlled environment variable",
+      "known_limits": "API key unavailable in this environment; don't claim data downloaded"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{cressie1993}
+Noel A.~C. Cressie.
+\newblock {\em Statistics for Spatial Data}.
+\newblock John Wiley \& Sons, 1993.
+
+\bibitem{golub2013}
+Gene~H. Golub and Charles~F. Van~Loan.
+\newblock {\em Matrix Computations}.
+\newblock Johns Hopkins University Press, 4 edition, 2013.
+
+\bibitem{leveque2002}
+Randall~J. LeVeque.
+\newblock {\em Finite Volume Methods for Hyperbolic Problems}.
+\newblock Cambridge University Press, 2002.
+
+\end{thebibliography}

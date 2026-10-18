@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-18",
+  "mode": "SYNTHETIC",
+  "python_version": "3.13.5",
+  "pytest": "12 passed (executed)",
+  "experiment": "executed",
+  "figures_generated": 4,
+  "latex_compile": "success - 14 pages with pdflatex + bibtex8",
+  "matlab_runtime": "not available; scripts not executed",
+  "r_runtime": "not available; scripts not executed",
+  "browser": "JavaScript syntax check and numerical execution in Node mock DOM passed; native Chromium execution blocked by environment",
+  "real_data": "not acquired; DNS/network restrictions",
+  "results_path": "results/metrics/synthetic_summary.json"
+}

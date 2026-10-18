@@ -1,0 +1,15 @@
+\section{Algoritmos y pruebas técnicas}
+\subsection{Reconstrucción RBF por SVD}
+\begin{enumerate}
+\item Construir $A_{ij}=\exp(-\|s_i-s_j\|_2^2/(2\ell^2))$.
+\item Formar matriz aumentada $B=[A;\sqrt\lambda I]$ y vector $b=[y;0]$.
+\item Calcular $B=U\Sigma V^T$; descartar singularidades numéricas bajo tolerancia dependiente de $\epsilon_{\mathrm{maquina}}$.
+\item Obtener $\widehat\beta=V\Sigma^\dagger U^Tb$ y evaluar $\widehat C(s)=\phi(s)^T\widehat\beta$.
+\item Para cada validación externa, reconstruir $A$ exclusivamente con estaciones de entrenamiento.
+\end{enumerate}
+
+\subsection{Conservación en malla periódica}
+Cada actualización de volumen finito conserva exactamente, en aritmética exacta, la suma de contribuciones de flujo cuando $S=k=0$. La suma de celdas se verifica numéricamente antes y después de cada experimento de masa. Se dispone además de un test que espera error para $\Delta t$ inestable: un algoritmo que no rechazara el paso no cumpliría las garantías de la implementación.
+
+\subsection{Procedencia de imágenes}
+\texttt{compare\_synthetic.png}, \texttt{svd\_synthetic.png},\\ \texttt{cv\_synthetic.png} y \texttt{convergence\_synthetic.png} fueron exportadas por un único comando con semilla fija. No hay fotografías, estaciones reales, mapas base ni imágenes inferidas externas mezcladas con estas figuras matemáticas.
